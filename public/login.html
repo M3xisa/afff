@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login — Aventura Ambiental</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="scene">
+  <div class="character">
+    <img src="imagens/personagem.png" alt="Leo Byte">
+    <div class="speech">Olá! Sou Leo Byte — seu guia!</div>
+  </div>
+
+  <div class="login-card">
+    <h1>LOGIN</h1>
+    <form id="loginForm">
+      <div class="field">
+        <label for="user">Username</label>
+        <input id="user" type="text" placeholder="seunome" required>
+      </div>
+      <div class="field">
+        <label for="pass">Password</label>
+        <input id="pass" type="password" placeholder="••••••••" required>
+      </div>
+      <div class="buttons">
+        <button class="btn-primary" type="submit">Login</button>
+      </div>
+    </form>
+    <p style="font-size:11px;margin-top:8px;">Não tem conta? <a href="register.html" style="color:#b59f6b;">Registrar</a></p>
+  </div>
+
+  <div class="character">
+    <img src="imagens/personagem2.png" alt="Mia Byte">
+    <div class="speech">Vamos aprender sobre o meio ambiente!</div>
+  </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const username = document.getElementById('user').value;
+  const password = document.getElementById('pass').value;
+
+  try{
+    const res = await fetch('/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nomeusuario:username, senha:password})
+    });
+    const data = await res.json();
+    if(data.error) return alert(data.error);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('jogador_id', data.id);
+    localStorage.setItem('nomeusuario', data.nomeusuario);
+    window.location.href='dashboard.html';
+  } catch(e){ console.error(e); alert('Erro ao logar'); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fase — Aventura Ambiental</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="scene">
+  <div class="character">
+    <img src="imagens/personagem.png" alt="Leo Byte">
+    <div class="speech" id="problem-balloon">Carregando problema da semana...</div>
+  </div>
+
+  <div class="phase-card">
+    <h2 id="problem-title">...</h2>
+    <p id="problem-desc">...</p>
+
+    <div id="questions-container"></div>
+    <button class="next-btn" id="next-btn" style="display:none;">Próximo</button>
+
+    <div id="explanation" style="margin-top:15px; display:none;">
+      <h3>Como resolver:</h3>
+      <textarea id="solution-code" style="width:100%;height:120px;background:#0b3b20;color:#f0e6c8;padding:10px;border-radius:10px;font-family:'Courier New',monospace;"></textarea>
+      <button onclick="verificarCodigo()" style="margin-top:5px;background:#2a7b3e;color:#f7f0d6;">Verificar</button>
+    </div>
+  </div>
+
+  <div class="character">
+    <img src="imagens/personagem2.png" alt="Mia Byte">
+    <div class="speech">Responda as perguntas e crie o programa!</div>
+  </div>
+</div>
+
+<script>
+const API_KEY = 'SUA_CHAVE_NEWSAPI';
+let faseData;
+let currentQuestion = 0;
+
+async function carregarFase(){
+  try{
+    const res = await fetch(`https://newsapi.org/v2/top-headlines?category=science&q=environment&apiKey=${API_KEY}`);
+    const data = await res.json();
+    const noticia = data.articles[0];
+
+    // Perguntas geradas com IA ou estáticas
+    faseData = {
+      problema:{titulo:noticia.title, descricao:noticia.description || noticia.content},
+      perguntas:[
+        {q:"Qual o tema principal?", a:"Biodiversidade", b:"Clima", c:"Poluição", d:"Outros"},
+        {q:"Quem fiscaliza?", a:"IBAMA", b:"Prefeitura", c:"ONU", d:"NASA"},
+        {q:"Solução prática?", a:"Reflorestamento", b:"Urbanização", c:"Hidrelétricas", d:"Mais estradas"}
+      ],
+      explicacao:`# Exemplo de código Python\nprint("Registrar áreas afetadas e sugerir reflorestamento")`
+    };
+
+    document.getElementById('problem-balloon').innerText = noticia.title;
+    document.getElementById('problem-title').innerText = faseData.problema.titulo;
+    document.getElementById('problem-desc').innerText = faseData.problema.descricao;
+    mostrarPergunta();
+  }catch(e){
+    document.getElementById('problem-balloon').innerText = "Erro ao carregar fase.";
+    console.error(e);
+  }
+}
+
+function mostrarPergunta(){
+  const q = faseData.perguntas[currentQuestion];
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div class="question">
+      <p>${q.q}</p>
+      <button onclick="responder('a')">${q.a}</button>
+      <button onclick="responder('b')">${q.b}</button>
+      <button onclick="responder('c')">${q.c}</button>
+      <button onclick="responder('d')">${q.d}</button>
+    </div>
+  `;
+}
+
+function responder(opcao){
+  alert("Resposta registrada!");
+  currentQuestion++;
+  if(currentQuestion < faseData.perguntas.length){
+    mostrarPergunta();
+  } else {
+    document.getElementById('questions-container').style.display='none';
+    document.getElementById('next-btn').style.display='inline-block';
+  }
+}
+
+document.getElementById('next-btn').addEventListener('click', ()=>{
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('explanation').style.display='block';
+  document.getElementById('solution-code').value = faseData.explicacao;
+});
+
+function verificarCodigo(){
+  const codigo = document.getElementById('solution-code').value;
+  if(codigo.includes("print")){
+    alert("Programa correto! +50 pontos");
+    // Aqui você chamaria API para atualizar pontos
+    window.location.href='ranking.html';
+  } else {
+    alert("Programa incorreto! Tente novamente.");
+  }
+}
+
+carregarFase();
+</script>
+</body>
+</html>
+
+</html>
