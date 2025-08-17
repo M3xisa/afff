@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro — Aventura Ambiental</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="scene">
+    <div class="character">
+      <img src="imagens/personagem.png" alt="Leo Byte">
+      <div class="speech">Crie sua conta para começar!</div>
+    </div>
+
+    <div class="login-card">
+      <h1 class="title">REGISTRO</h1>
+      <form id="registerForm">
+        <div class="field">
+          <label for="user">Username</label>
+          <input id="user" type="text" placeholder="seunome" required />
+        </div>
+        <div class="field">
+          <label for="pass">Password</label>
+          <input id="pass" type="password" placeholder="••••••••" required />
+        </div>
+        <div class="buttons">
+          <button class="btn-primary" type="submit">Registrar</button>
+        </div>
+      </form>
+      <p style="font-size:12px; margin-top:10px;">Já tem conta? <a href="login.html">Login</a></p>
+    </div>
+
+    <div class="character">
+      <img src="imagens/personagem2.png" alt="Mia Byte">
+      <div class="speech">Vamos proteger o planeta juntos!</div>
+    </div>
+  </div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const username = document.getElementById('user').value;
+  const password = document.getElementById('pass').value;
+
+  try {
+    const res = await fetch('/api/register', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ nomeusuario: username, senha: password })
+    });
+    const data = await res.json();
+    if(data.error) return alert(data.error);
+    alert('Registrado com sucesso!');
+    window.location.href = 'login.html';
+  } catch(err){ console.error(err); alert('Erro ao registrar.'); }
+});
+</script>
+</body>
+</html>
